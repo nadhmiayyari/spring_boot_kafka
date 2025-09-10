@@ -1,0 +1,81 @@
+when message is sent by producer ==> it is sent to leader broker
+
+kafka broker stores the message in kafka topic ==> topic is split into multiple partitions
+
+
+if kafka cluster has >1 than 1 kafka broker ==> topic partitions will be copied over to other brokers
+
+leader broker is the one to receive kafka message , replicates that message to other brokers that act like followers
+what if the leader broker goes down before sharing this ack message with followers and never goes back
+
+in this case the message is lost
+
+
+we can configure kafka producer to receive ack from all brokers
+we can configure kafka producer
+
+
+property:
+spring.kafka.producer.acks=all ==> from all
+
+spring.kafka.producer.acks=1 ==> wait for ack from the leader broker only
+
+spring.kafka.producer.acks=0 ==> does not wait for any ack
+
+kafka producer will wait for ack from in-sync replicas depend on the replication factor
+
+config.min.insync.replicas=2  ==> will not wait for 5 replicas but only to receive 2 acks from these replicas
+
+--replication-factor = 5
+
+#########" kafka producer retries ##########
+
+what happens if one the followers goes down and we don"t have this in in sync replica at that moment
+
+kafka producer will retry this operation for a very large number of times or until the delivery timeout is reached
+
+
+so , if one of the brokers is not available and producer receives a retrial error , it will retry to deliver the message again and again
+until it reaches many times
+
+if the producer is configured with acks ==0 ==> will not wait for any message  , if there is an error ==> will be a non retryable error
+== permanent problem that is unlikely to be resolved by retries
+
+if kafka broker responds with retriable error ==> temporary problem that can be resolved by retrying the send operation
+
+if it is retiable error =< kafka producer will retry the send operation
+
+
+## configuration ##
+
+spring.kafka.producer.retries = 10 ==>
+
+how many times kafka producer will try to send a message before marking it as failed
+
+this property is often used with retry backoff configuration property
+
+spring.kafka.producer.properties.retry.backoff.ms = 1000
+==> how long the producer will wait before attempting to retry a failed request ( default is 100ms )
+
+
+==> in this configuration above ==> kafka will retry message 10 times with 1 second between each retry
+
+
+
+##" in kafka documentation developers are encouraged to configure this using another property
+
+
+spring.kafka.producer.properties.delivery.timeout.ms ===>
+control the maximum time kafka producer can spend trying to deliver the message default is 2 minutes
+
+during this time kafka producer will retry to send the message again and again
+
+
+if we want to configure this value =)==>
+
+
+ than its value should be : >= linger.ms + request.timeout.ms
+ spring.kafka.producer.properties.linger.ms == max time in milliseconds that producer will wait and buffer data before
+ sending a batch of messages ( default value == 0 =
+
+ request.timeout.ms == max time to wait from a broker after sending a request
