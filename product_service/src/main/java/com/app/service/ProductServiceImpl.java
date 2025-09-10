@@ -33,19 +33,10 @@ public class ProductServiceImpl implements IProductService{
         productCreatedEvent.setQuantity(10);
         productCreatedEvent.setTitle("iphone_15");
 
-
-
         //String topic, K key, @Nullable V data
-       CompletableFuture< SendResult<String,ProductCreatedEvent>> futureResult =
-               kafkaTemplate.send("product-created-event",id,productCreatedEvent);
+         SendResult<String,ProductCreatedEvent>  futureResult =
+               kafkaTemplate.send("product-created-event",id,productCreatedEvent).get();
 
-        futureResult.whenComplete((result,exception)->{
-            if(exception!=null){
-                LOGGER.error(exception.getMessage());
-            }else{
-                LOGGER.info("Product created successfully");
-            }
-        });
         LOGGER.info("Returning Product Id");
 
         return id;
