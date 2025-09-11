@@ -5,3 +5,6 @@ but there is no order between partitions
 
 if we have 3 consumers : 
 each consumer will be assigned to read from a partition 
+
+
+create a new class for kafka handler 

@@ -1,6 +1,6 @@
 package com.app.service;
 
-import com.app.dto.ProductCreatedEvent;
+import com.app.core_module.ProductCreatedEvent;
 import com.app.rest.ProductDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -9,7 +9,6 @@ import org.springframework.kafka.support.SendResult;
 import org.springframework.stereotype.Service;
 
 import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
 
